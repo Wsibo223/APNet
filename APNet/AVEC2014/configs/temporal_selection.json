@@ -1,0 +1,5 @@
+{
+  "trial": 23,
+  "epoch": 4,
+  "provenance": "historical minimum Test RMSE across trials and epochs; fixed for historical replay only"
+}

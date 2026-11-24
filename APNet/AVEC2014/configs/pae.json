@@ -1,0 +1,18 @@
+{
+  "args": [
+    "--seed",
+    "2026",
+    "--n_splits",
+    "5",
+    "--epochs",
+    "80",
+    "--min_epochs",
+    "10",
+    "--early_stop",
+    "20",
+    "--batch_size",
+    "8",
+    "--eval_batch_size",
+    "8"
+  ]
+}
