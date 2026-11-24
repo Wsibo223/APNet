@@ -1,0 +1,21 @@
+# Local datasets and generated experiments
+data/
+outputs/
+runs/
+checkpoints/
+AVEC2019_compat/
+AVEC2019_delta_pose_compat/
+*_training/
+*_exports/
+*_export/
+*.csv
+*.npz
+*.pth
+*.pt
+*.ckpt
+*.log
+*.zip
+__pycache__/
+*.py[cod]
+.env
+.venv/
