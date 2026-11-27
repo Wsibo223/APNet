@@ -97,7 +97,7 @@ def fit(train_dev_dirs, out):
     return model_path, seen, {"train": metrics(train, pred_train), "dev": metrics(dev, pred_dev)}
 
 
-def score_test(test_dirs, model_path, seen):
+def score_test(test_dirs, model_path, seen, output_csv=None):
     frozen = json.loads(model_path.read_text())
     test = read_split(test_dirs, "test")
     if seen & set(test["video_id"]):
@@ -108,5 +108,5 @@ def score_test(test_dirs, model_path, seen):
     x = np.where(np.isnan(x), frozen["train_impute_mean"], x)
     x = (x - frozen["train_scale_mean"]) / frozen["train_scale_std"]
     pred = x @ np.asarray(frozen["ridge_weights"]) + frozen["ridge_intercept"] + frozen["dev_calibration_shift"]
-    save_table(model_path.parent / "test_predictions.csv", test, pred)
+    save_table(output_csv if output_csv is not None else model_path.parent / "test_predictions.csv", test, pred)
     return metrics(test, pred)
