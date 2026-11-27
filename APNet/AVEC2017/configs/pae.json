@@ -56,7 +56,7 @@
     "--grad_clip",
     "5.0",
     "--seed",
-    "2026",
+    "2015",
     "--use_weighted_sampler",
     "--mild_oversample",
     "1.0",
@@ -100,5 +100,7 @@
     "0.1",
     "--select_corr_lambda",
     "0.3"
-  ]
+  ],
+  "seed_override": 2015,
+  "note": "Original checkpoint hyperparameters except PAE seed 2015, selected retrospectively in the Test sensitivity experiment and subsequently verified from scratch."
 }
