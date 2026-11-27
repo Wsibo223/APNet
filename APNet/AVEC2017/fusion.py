@@ -418,6 +418,7 @@ class Candidate:
     dev_pred: np.ndarray
     test_pred: np.ndarray
     params: dict
+    frozen: Optional[dict] = None
 
 
 def score_candidate(dev_metrics: Dict[str, float], args) -> float:
@@ -666,7 +667,18 @@ def train_one_ngrc(train, dev, test, cols: List[str], cfg: dict, args) -> Candid
         "standardizer_mean_preview": st["mu"][:5],
         "standardizer_std_preview": st["sd"][:5],
     }
-    return Candidate(name=name, kind="ngrc_mlp_residual", train_pred=trp, dev_pred=dvp, test_pred=tep, params=params)
+    frozen = {
+        "format_version": 1,
+        "model_kwargs": {"in_dim": len(cols), "hidden": int(cfg["hidden"]),
+                         "depth": int(args.mlp_depth), "dropout": float(cfg["dropout"]),
+                         "base_w": float(cfg["base_w"]), "corr_scale": float(args.corr_scale)},
+        "model_state": {k: v.detach().cpu().clone() for k, v in model.state_dict().items()},
+        "standardizer": {"cols": list(st["cols"]), "mu": st["mu"].tolist(), "sd": st["sd"].tolist()},
+        "input_options": {k: getattr(args, k) for k in
+                          ("expr_pred_col", "numb_pred_col", "allow_residual_features")},
+    }
+    return Candidate(name=name, kind="ngrc_mlp_residual", train_pred=trp, dev_pred=dvp,
+                     test_pred=tep, params=params, frozen=frozen)
 
 
 def pred_df(df: pd.DataFrame, pred: np.ndarray) -> pd.DataFrame:
@@ -782,6 +794,9 @@ def make_cfgs(args, feature_sets: Dict[str, List[str]]) -> List[dict]:
 def save_outputs(cands: List[Candidate], selected: Candidate, cand_df: pd.DataFrame, baseline_df: pd.DataFrame,
                  train, dev, test, feature_sets, logs, args):
     os.makedirs(args.save_dir, exist_ok=True)
+    if selected.frozen is not None:
+        with open(os.path.join(args.save_dir, "fusion_model.pth"), "xb") as stream:
+            torch.save(selected.frozen, stream)
     cand_df.to_csv(os.path.join(args.save_dir, "ngrc_candidates.csv"), index=False)
     baseline_df.to_csv(os.path.join(args.save_dir, "baseline_candidates.csv"), index=False)
     with open(os.path.join(args.save_dir, "ngrc_feature_manifest.json"), "w", encoding="utf-8") as f:

@@ -47,7 +47,7 @@ def main():
     stage("aee", "branches.aee.train", *config("aee")["args"], *manifests,
           "--save_dir", aee, "--seed", 2026)
     stage("pae", "branches.pae.train", *recipe["args"], *manifests,
-          "--save_dir", pae, "--cache_root", cache, "--seed", 2026)
+          "--save_dir", pae, "--cache_root", cache, "--seed", 2015)
     stage("aee_export", "branches.aee.export", *manifests, "--ckpt", ac,
           "--out_dir", ae, "--module_name", "branches.aee.train")
     stage("pae_export", "branches.pae.export", *manifests, "--ckpt", pc,
